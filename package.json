@@ -2,10 +2,10 @@
   "name": "question-tracker-server",
   "version": "1.0.0",
   "description": "Leetcode Question Tracker Server",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [
     "leetcode",

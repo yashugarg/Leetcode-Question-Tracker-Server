@@ -12,6 +12,10 @@ app.use(Express.json());
 
 const leetcodeAuth = new LeetcodeAuth();
 
+app.get("/", (req, res) => {
+  res.send("Leetcode Question Tracker");
+});
+
 app.get("/access-token", async (req, res) => {
   const token = await leetcodeAuth.accessToken();
   res.json(token);
@@ -23,4 +27,6 @@ app.post("/user-info", async (req, res) => {
   res.json(data);
 });
 
-app.listen(8000);
+const port = process.env.PORT || 8000;
+
+app.listen(port);
