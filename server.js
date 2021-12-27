@@ -1,7 +1,17 @@
 import Express from "express";
+import Cors from "cors";
 import { LeetcodeAuth } from "./leetcodeAuth.js";
 
 const app = Express();
+
+const corsOptions = {
+  origin: "*",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+
+app.use(Cors(corsOptions));
+
 app.use(
   Express.urlencoded({
     extended: true,
@@ -19,6 +29,12 @@ app.get("/", (req, res) => {
 app.get("/access-token", async (req, res) => {
   const token = await leetcodeAuth.accessToken();
   res.json(token);
+});
+
+app.post("/login", async (req, res) => {
+  const d = req.body;
+  const resp = await leetcodeAuth.verifyLogin(d.token, d.session);
+  res.json(resp.data["userStatus"]);
 });
 
 app.post("/user-info", async (req, res) => {

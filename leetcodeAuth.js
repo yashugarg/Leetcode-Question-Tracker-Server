@@ -1,6 +1,18 @@
 import axios from "axios";
 
 export class LeetcodeAuth {
+  authHeader = (token, session) => {
+    return {
+      authority: "leetcode.com",
+      scheme: "https",
+      cookie: "csrftoken=" + token + "; LEETCODE_SESSION=" + session,
+      origin: "https://leetcode.com",
+      "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+      "x-csrftoken": token,
+    };
+  };
+
   getCsrfToken = async (cookie) => {
     let csrftoken = "";
     const cookies = cookie[0].split(";");
@@ -27,6 +39,27 @@ export class LeetcodeAuth {
     return token;
   };
 
+  verifyLogin = async (token, session) => {
+    const res = await axios.post(
+      "https://leetcode.com/graphql",
+      {
+        query: `
+        query globalData {
+          userStatus {
+            isSignedIn
+            username
+            __typename
+          }
+        }
+      `,
+      },
+      {
+        headers: this.authHeader(token, session),
+      }
+    );
+    return res.data;
+  };
+
   getUserInfo = async (username, token, session) => {
     const res = await axios.post(
       "https://leetcode.com/graphql",
@@ -41,7 +74,6 @@ export class LeetcodeAuth {
             matchedUser(username: $username) {
               username
               socialAccounts
-              githubUrl
               contributions {
                 points
                 questionCount
@@ -115,14 +147,8 @@ export class LeetcodeAuth {
       },
       {
         headers: {
-          authority: "leetcode.com",
-          scheme: "https",
-          cookie: "csrftoken=" + token + "; LEETCODE_SESSION=" + session,
-          origin: "https://leetcode.com",
+          ...this.authHeader(token, session),
           referer: "https://leetcode.com/" + username,
-          "user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-          "x-csrftoken": token,
         },
         withCredentials: true,
       }
@@ -144,15 +170,8 @@ export class LeetcodeAuth {
       data,
       {
         headers: {
-          authority: "leetcode.com",
-          scheme: "https",
-          cookie: "csrftoken=" + token,
-          origin: "https://leetcode.com",
+          ...this.authHeader(token, ""),
           referer: "https://leetcode.com/accounts/login/",
-          "user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-          "x-csrftoken": token,
-          "x-requested-with": "XMLHttpRequest",
         },
         withCredentials: true,
       }
