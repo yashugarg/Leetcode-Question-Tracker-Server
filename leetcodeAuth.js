@@ -1,18 +1,7 @@
 import axios from "axios";
+import { authHeader } from "./constants.js";
 
 export class LeetcodeAuth {
-  authHeader = (token, session) => {
-    return {
-      authority: "leetcode.com",
-      scheme: "https",
-      cookie: "csrftoken=" + token + "; LEETCODE_SESSION=" + session,
-      origin: "https://leetcode.com",
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-      "x-csrftoken": token,
-    };
-  };
-
   getCsrfToken = async (cookie) => {
     let csrftoken = "";
     const cookies = cookie[0].split(";");
@@ -54,7 +43,7 @@ export class LeetcodeAuth {
       `,
       },
       {
-        headers: this.authHeader(token, session),
+        headers: authHeader(token, session),
       }
     );
     return res.data;
@@ -147,7 +136,7 @@ export class LeetcodeAuth {
       },
       {
         headers: {
-          ...this.authHeader(token, session),
+          ...authHeader(token, session),
           referer: "https://leetcode.com/" + username,
         },
         withCredentials: true,
@@ -170,7 +159,7 @@ export class LeetcodeAuth {
       data,
       {
         headers: {
-          ...this.authHeader(token, ""),
+          ...authHeader(token, ""),
           referer: "https://leetcode.com/accounts/login/",
         },
         withCredentials: true,

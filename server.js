@@ -1,6 +1,7 @@
 import Express from "express";
 import Cors from "cors";
 import { LeetcodeAuth } from "./leetcodeAuth.js";
+import { Questions } from "./questions.js";
 
 const app = Express();
 
@@ -40,6 +41,17 @@ app.post("/login", async (req, res) => {
 app.post("/user-info", async (req, res) => {
   const d = req.body;
   const data = await leetcodeAuth.getUserInfo(d.username, d.token, d.session);
+  res.json(data);
+});
+
+const questions = new Questions();
+
+app.post("/:questionSlug/submissions", async (req, res) => {
+  const data = await questions.getSubmissions(
+    req.body.token,
+    req.body.session,
+    req.params.questionSlug
+  );
   res.json(data);
 });
 
